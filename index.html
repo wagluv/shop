@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 리스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #ffd8b8 0%, #ffb310 100%);
+            min-height: 100vh;
+            padding: 8px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            padding: 5px;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 12px;
+            padding: 0 10px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-box:focus {
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 10px 0;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            background-color: #ffffff;
+            padding: 8px;
+        }
+
+        .product-info {
+            padding: 8px;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .product-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            line-height: 1.2;
+            height: 1.8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .product-description {
+            font-size: 0.65rem;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            height: 1.69rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #e74c3c;
+            margin-bottom: 6px;
+            text-shadow: 1px 1px 2px rgba(231, 76, 60, 0.2);
+        }
+
+        .product-link {
+            display: block;
+            background: linear-gradient(135deg, #e7b74f 0%, hsl(33, 100%, 51%) 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+        }
+
+        .product-link:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 3px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading, .error {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 1.1rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin: 20px;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        /* 태블릿 (세로) */
+        @media (min-width: 600px) {
+            body {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .product-image {
+                height: 220px;
+                padding: 15px;
+            }
+
+            .product-info {
+                padding: 16px;
+            }
+
+            .product-title {
+                font-size: 1rem;
+                height: 2.4rem;
+                line-height: 1.2;
+            }
+
+            .product-description {
+                font-size: 0.8rem;
+                height: 2.56rem;
+                line-height: 1.6;
+            }
+
+            .product-price {
+                font-size: 1.5rem;
+            }
+
+            .product-link {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 태블릿 (가로) 및 작은 데스크톱 */
+        @media (min-width: 900px) {
+            body {
+                padding: 5px;
+            }
+
+            h1 {
+                font-size: 1.7rem;
+                margin-bottom: 20px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 24px;
+            }
+
+            .product-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            }
+
+            .product-link:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+            }
+        }
+
+        /* 큰 데스크톱 */
+        @media (min-width: 1200px) {
+            .product-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .product-image {
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="img1.png" alt="Header Image" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchBox" class="search-box" placeholder="상품 검색...">
+        </div>
+        <div id="productContainer">
+            <div class="loading">상품을 불러오는 중...</div>
+        </div>
+    </div>
+
+    <script>
+        let allProducts = [];
+
+        async function loadProducts() {
+            const container = document.getElementById('productContainer');
+
+            try {
+                // products.json 파일에서 상품 정보 로드
+                const response = await fetch('products.json');
+                if (!response.ok) {
+                    throw new Error('상품 정보를 불러올 수 없습니다.');
+                }
+
+                allProducts = await response.json();
+
+                if (allProducts.length === 0) {
+                    container.innerHTML = '<div class="error">표시할 상품이 없습니다.</div>';
+                    return;
+                }
+
+                displayProducts(allProducts);
+
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = `<div class="error">${error.message}</div>`;
+            }
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('productContainer');
+
+            if (products.length === 0) {
+                container.innerHTML = '<div class="error">검색 결과가 없습니다.</div>';
+                return;
+            }
+
+            // 상품 카드 HTML 생성
+            const productsHTML = products.map(product => `
+                <div class="product-card" onclick="window.open('${product.url}', '_blank')">
+                    <img src="${product.image}" alt="${product.title}" class="product-image" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                    <div class="product-info">
+                        <h2 class="product-title">${product.title}</h2>
+                        <p class="product-description">${product.description}</p>
+                        <a href="${product.url}" class="product-link" target="_blank" onclick="event.stopPropagation()">
+                            상품 보러가기
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `<div class="product-grid">${productsHTML}</div>`;
+        }
+
+        function searchProducts(query) {
+            const searchQuery = query.toLowerCase().trim();
+
+            if (!searchQuery) {
+                displayProducts(allProducts);
+                return;
+            }
+
+            const filteredProducts = allProducts.filter(product =>
+                product.title.toLowerCase().includes(searchQuery) ||
+                product.description.toLowerCase().includes(searchQuery)
+            );
+
+            displayProducts(filteredProducts);
+        }
+
+        // 페이지 로드 시 상품 정보 불러오기
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+
+            // 검색 기능
+            const searchBox = document.getElementById('searchBox');
+            searchBox.addEventListener('input', (e) => {
+                searchProducts(e.target.value);
+            });
+        });
+    </script>
+</body>
+</html>
